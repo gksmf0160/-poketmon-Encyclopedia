@@ -1048,6 +1048,13 @@ enum PokemonTranslator {
  let koreanName = PokemonTranslator.getKoreanName(for: pokemonName)
  print("\(pokemonName)의 한국어 이름: \(koreanName)")
  */
+
+func getkoreanTypeName(for typeName: String) -> String {
+    guard let type = PokemonTypeName(rawValue: typeName.lowercased()) else {
+        return "알 수 없는 타입"
+    }
+    return type.displayName
+}
 enum PokemonTypeName: String, CaseIterable, Codable {
     case normal
     case fire
