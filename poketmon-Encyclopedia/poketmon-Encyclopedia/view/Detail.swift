@@ -34,7 +34,7 @@ final class PokemonDetailViewController: UIViewController {
         setupUI()
         configure()
     }
-
+//MARK: UI 구성
     private func setupUI() {
         view.addSubview(containerView)
         containerView.backgroundColor = UIColor.darkRed
@@ -49,7 +49,7 @@ final class PokemonDetailViewController: UIViewController {
             containerView.addSubview($0)
             if let label = $0 as? UILabel {
                 label.textAlignment = .center
-                label.textColor = .black
+                label.textColor = .white
                 label.font = .systemFont(ofSize: 16, weight: .medium)
                 label.numberOfLines = 0
             }
@@ -66,6 +66,7 @@ final class PokemonDetailViewController: UIViewController {
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(imageView.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview()
+            nameLabel.font = .systemFont(ofSize: 30, weight: .bold)
         }
 
         typeLabel.snp.makeConstraints { make in
@@ -89,13 +90,16 @@ final class PokemonDetailViewController: UIViewController {
         if let urlStr = pokemon.sprites.front_default, let url = URL(string: urlStr) {
             imageView.kf.setImage(with: url)
         }
-
+         //포켓몬 번역
         let translatedName = PokemonTranslator.getKoreanName(for: pokemon.name)
-        /*let translatedTypes = pokemon.types.map { PokemonTypeName.getkoreanTypeName(for: <#T##String#>)(type: $0.type.name) }.joined(separator: ", ")*/
+        let translatedTypes = pokemon.types.map { getkoreanTypeName(for: $0.type.name)
+        }.joined(separator: ", ")
+        let pokeHeight : Double = Double(pokemon.height / 10)
+        let pokeWeight : Double = Double(pokemon.weight / 10)
 
-        nameLabel.text = "이름: \(translatedName)"
-        typeLabel.text = "타입: \((pokemon.types.map { $0.type.name }) .joined(separator: ", "))"
-        heightLabel.text = "키: \(pokemon.height) m"
-        weightLabel.text = "몸무게: \(pokemon.weight) kg"
+        nameLabel.text = "NO.\(pokemon.id)  \(translatedName)"
+        typeLabel.text = "타입: \(translatedTypes)"
+        heightLabel.text = "키: \(pokeHeight) m"
+        weightLabel.text = "몸무게: \(pokeWeight) kg"
     }
 }
