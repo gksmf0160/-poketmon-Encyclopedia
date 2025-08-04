@@ -12,6 +12,14 @@ import RxCocoa
 
 final class PokemonListViewController: UIViewController {
     private let searchBar = UISearchBar()
+    
+    private let pokeballImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "poketmon-ball") 
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 12
@@ -35,34 +43,50 @@ final class PokemonListViewController: UIViewController {
     private func setupUI() {
         title = "이전"
         navigationItem.titleView = searchBar
+
         collectionView.register(PokemonCell.self, forCellWithReuseIdentifier: PokemonCell.identifier)
         collectionView.backgroundColor = UIColor.darkRed
 
+       
+        view.addSubview(pokeballImageView)
         view.addSubview(collectionView)
+
+        // pokeballImageView 제약
+        pokeballImageView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(100)
+        }
+
         collectionView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
+            $0.top.equalTo(pokeballImageView.snp.bottom).offset(16)
+            $0.left.right.bottom.equalToSuperview()
         }
     }
 
     private func bind() {
+        // SearchBar 검색 바인딩
         searchBar.rx.text.orEmpty
             .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
             .distinctUntilChanged()
             .bind(onNext: { [weak self] in self?.viewModel.search(query: $0) })
             .disposed(by: disposeBag)
 
+        //  filtered 포켓몬 → collectionView 바인딩
         viewModel.filtered
             .bind(to: collectionView.rx.items(cellIdentifier: PokemonCell.identifier, cellType: PokemonCell.self)) { _, model, cell in
                 cell.configure(with: model)
             }
             .disposed(by: disposeBag)
 
+        //  셀 선택 시 상세화면 push
         collectionView.rx.modelSelected(Pokemon.self)
             .subscribe(onNext: { [weak self] pokemon in
                 self?.navigationController?.pushViewController(PokemonDetailViewController(pokemon: pokemon), animated: true)
             })
             .disposed(by: disposeBag)
 
+        //  무한 스크롤 처리
         collectionView.rx.contentOffset
             .subscribe(onNext: { [weak self] offset in
                 guard let self = self else { return }
@@ -75,4 +99,3 @@ final class PokemonListViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 }
-

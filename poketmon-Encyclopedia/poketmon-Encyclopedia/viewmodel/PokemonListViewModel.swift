@@ -44,14 +44,14 @@ final class PokemonListViewModel {
     }
 
     func search(query: String) {
-        if query.isEmpty {
-            filtered.accept(pokemons.value)
-        } else {
-            let lowercased = query.lowercased()
-            let result = pokemons.value.filter {
-                $0.name.contains(lowercased) || "\($0.id)" == lowercased
+            if query.isEmpty {
+                filtered.accept(pokemons.value)
+            } else {
+                let result = pokemons.value.filter {
+                    let koreanName = PokemonTranslator.getKoreanName(for: $0.name)
+                    return koreanName.contains(query) || "\($0.id)" == query
+                }
+                filtered.accept(result)
             }
-            filtered.accept(result)
         }
     }
-}
