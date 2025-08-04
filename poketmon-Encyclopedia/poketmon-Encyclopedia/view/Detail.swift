@@ -94,8 +94,8 @@ final class PokemonDetailViewController: UIViewController {
         let translatedName = PokemonTranslator.getKoreanName(for: pokemon.name)
         let translatedTypes = pokemon.types.map { getkoreanTypeName(for: $0.type.name)
         }.joined(separator: ", ")
-        let pokeHeight : Double = Double(pokemon.height / 10)
-        let pokeWeight : Double = Double(pokemon.weight / 10)
+        let pokeHeight: Double = Double(pokemon.height) / 10.0
+        let pokeWeight: Double = Double(pokemon.weight) / 10.0
 
         nameLabel.text = "NO.\(pokemon.id)  \(translatedName)"
         typeLabel.text = "타입: \(translatedTypes)"
